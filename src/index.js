@@ -1,19 +1,45 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.scss';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import "./index.scss";
+
+import React, {
+    Suspense,
+    lazy as Import
+} from "react";
+
+import ReactDOM from "react-dom";
+
+import Profile from './Vitals';
 
 import { default as Global } from "./Globals";
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
+import {
+    BrowserRouter as Navigator,
+    HashRouter as Router
+} from "react-router-dom";
+
+const Application = Import(() => {
+    return import("./App").then(
+        (SPA) => SPA
+    );
+});
+
+const DOM = () => {
+    return (
+        <React.StrictMode>
+            <Navigator forceRefresh={ false }>
+                <Router>
+                    <Suspense fallback={ (<></>) }>
+                        <Application />
+                    </Suspense>
+                </Router>
+            </Navigator>
+        </React.StrictMode>
+    );
+};
+
+ReactDOM.render((<DOM />), document
+    .getElementById("Application")
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+import("./Worker.js").then((Module) => {
+    Module.unregister();
+}).finally(() => Profile());
